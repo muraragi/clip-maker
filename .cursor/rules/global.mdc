@@ -1,0 +1,47 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Your Role: You are an AI assistant helping to build a web application called "Quick Editor". Your primary goal is to generate clean, professional, and functional code based on the specific prompts provided for each step.
+
+Project Overview: We are building a client-side web application using Vue.js that allows users to perform quick video and audio editing tasks. The core features include:
+
+Uploading video/audio files.
+Cutting/trimming media based on a timeline selection.
+Applying simple video crop adjustments.
+Applying basic video filters (like grayscale, sepia).
+Adding simple text overlays to videos.
+Previewing the edits and downloading the result. The application should have a modern, clean, and user-friendly interface using shadcn-vue components. All processing should happen in the user's browser.
+Mandatory Technology Stack:
+
+Framework: Vue 3 (using the Composition API exclusively)
+Language: TypeScript (strict typing preferred)
+Build Tool: Vite
+Styling: Tailwind CSS (utility-first approach, used by shadcn-vue)
+UI Components: shadcn-vue (Use its components for UI elements like buttons, inputs, dialogs, etc.)
+State Management: Pinia
+Core Processing: ffmpeg.wasm (@ffmpeg/ffmpeg and @ffmpeg/core libraries) for client-side video/audio manipulation.
+Code Style & Architecture Guide:
+
+Professionalism: Write code that is readable, maintainable, and follows best practices.
+TypeScript: Use TypeScript effectively. Add type hints for variables, function parameters, and return types. Leverage interfaces and types for complex data structures.
+Vue 3 Composition API: All Vue components MUST use the <script setup> syntax and the Composition API. Use ref and reactive appropriately.
+Components: Create modular, single-responsibility components. Keep components focused and reusable where possible. Use clear prop names and emit events for child-to-parent communication.
+shadcn-vue Usage: Leverage shadcn-vue components for building the user interface. Add new shadcn-vue components as needed using its CLI (npx shadcn-vue@latest add [component-name]). Customize appearance primarily through Tailwind utility classes passed via props or applied to surrounding elements, following shadcn-vue patterns. Use the components from the components/ui directory.
+Tailwind CSS: Use Tailwind utility classes directly in the template for layout, spacing, and custom styling needs not covered by shadcn-vue components or when customizing them.
+Pinia: Use Pinia for managing shared application state (like file info, editing parameters, processing status). Define stores logically.
+Formatting: Ensure all generated code (TypeScript, Vue templates, CSS) is formatted using Prettier with a standard configuration (e.g., print width 80).
+Error Handling: Implement basic error handling, especially around file operations, FFmpeg loading, and processing. Provide user feedback for errors (consider using shadcn-vue components like Alert or Toast).
+Asynchronous Operations: Use async/await for asynchronous code (file reading, FFmpeg operations). Provide loading states and user feedback during long operations (consider shadcn-vue Skeleton or spinners within buttons).
+Comments: Add comments only where necessary to explain complex logic or non-obvious code sections.
+Agent Behavior:
+
+Adhere to Stack: Use the specified technologies. Prioritize shadcn-vue components for UI elements. Do NOT introduce other UI component libraries.
+Follow Prompts: Address the requirements of each specific step-by-step prompt accurately.
+Context Awareness: Remember the overall project goal and the decisions made in previous steps (as reflected in the code), including the use of shadcn-vue.
+Clarity: If a prompt is ambiguous, ask for clarification before proceeding.
+Completeness: Provide complete code snippets or file contents as requested by the prompt.
+ffmpeg.wasm: Be mindful that ffmpeg.wasm can be resource-intensive and requires specific server headers (COOP/COEP) to function correctly. Implement its loading and execution carefully, including progress reporting and error handling.
+Goal: To incrementally build a functional, well-structured, and user-friendly Quick Editor application using Vue 3, TypeScript, Pinia, Tailwind CSS, shadcn-vue, and ffmpeg.wasm, according to the provided steps.
+
