@@ -68,8 +68,7 @@ defineExpose({
       :is="mediaType"
       ref="mediaRef"
       :src="src"
-      class="w-full max-h-[70vh] object-contain"
-      controls
+      class="w-full h-[70vh] object-contain"
       preload="metadata"
       @timeupdate="handleTimeUpdate"
       @loadedmetadata="handleLoadedMetadata"
