@@ -1,0 +1,16 @@
+{
+  "name": "Clip Maker",
+  "short_name": "ClipMaker",
+  "description": "Simple browser-based video editing with easy-to-use features",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}

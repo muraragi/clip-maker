@@ -14,7 +14,6 @@ const editorStore = useEditorStore()
 const { loadFFmpeg, error: ffmpegError } = useFFmpeg()
 const isPlaying = ref(false)
 
-// Destructure store properties with storeToRefs for reactivity
 const { originalFile, mediaSourceUrl, duration, currentTime, timelineSegments, isFFmpegLoading } =
   storeToRefs(editorStore)
 
@@ -52,7 +51,7 @@ const handleTogglePlay = async () => {
     mediaRef.value.pause()
     isPlaying.value = false
   } else {
-    await mediaRef.value.play()
+    mediaRef.value.play()
     isPlaying.value = true
   }
 }

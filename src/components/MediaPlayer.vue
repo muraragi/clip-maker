@@ -16,55 +16,38 @@ const emit = defineEmits<{
 }>()
 
 const mediaRef = ref<HTMLVideoElement | HTMLAudioElement | null>(null)
-
-// Determine media type based on src extension if not explicitly provided
 const mediaType = computed(() => {
   if (props.type) return props.type
 
   const extension = props.src.split('.').pop()?.toLowerCase() || ''
 
-  // Audio extensions
   if (['mp3', 'ogg', 'wav', 'aac'].includes(extension)) {
     return 'audio'
   }
 
-  // Default to video
   return 'video'
 })
-
-// Track if we're currently manually seeking between segments
 const isSeekingBetweenSegments = ref(false)
-
-// Find the segment that contains the given time
 const findSegmentForTime = (time: number) => {
   return props.timelineSegments.find((segment) => time >= segment.start && time <= segment.end)
 }
-
-// Find the next segment after the current time
 const findNextSegment = (currentTime: number) => {
-  // Sort segments by start time
   const sortedSegments = [...props.timelineSegments].sort((a, b) => a.start - b.start)
   return sortedSegments.find((segment) => segment.start > currentTime)
 }
-
 const handleTimeUpdate = () => {
   if (!mediaRef.value || isSeekingBetweenSegments.value) return
 
   const currentTime = mediaRef.value.currentTime
 
-  // Check if we're in an active segment
   const currentSegment = findSegmentForTime(currentTime)
 
   if (currentSegment) {
-    // If within segment, just update time normally
     emit('timeupdate', currentTime, mediaRef.value.duration)
 
-    // If we're approaching the end of a segment, prepare to seek to next segment
     if (currentTime + 0.1 >= currentSegment.end) {
       const nextSegment = findNextSegment(currentTime)
-
       if (nextSegment) {
-        // We found a next segment, seek to its start
         isSeekingBetweenSegments.value = true
         mediaRef.value.currentTime = nextSegment.start
         setTimeout(() => {
@@ -73,18 +56,15 @@ const handleTimeUpdate = () => {
       }
     }
   } else {
-    // We're outside any segment, find the next segment and seek to it
     const nextSegment = findNextSegment(currentTime)
 
     if (nextSegment) {
-      // We found a next segment, seek to its start
       isSeekingBetweenSegments.value = true
       mediaRef.value.currentTime = nextSegment.start
       setTimeout(() => {
         isSeekingBetweenSegments.value = false
       }, 50)
     } else {
-      // No next segment, we're at the end
       mediaRef.value.pause()
       emit('pause')
     }
@@ -104,8 +84,6 @@ const handlePlay = () => {
 const handlePause = () => {
   emit('pause')
 }
-
-// Watch for changes in timeline segments and adjust playback if needed
 watch(
   () => props.timelineSegments,
   (newSegments) => {
@@ -115,7 +93,6 @@ watch(
     const currentSegment = findSegmentForTime(currentTime)
 
     if (!currentSegment) {
-      // Current time is not in any segment, seek to the start of the first segment
       const firstSegment = [...newSegments].sort((a, b) => a.start - b.start)[0]
       if (firstSegment) {
         mediaRef.value.currentTime = firstSegment.start
@@ -125,7 +102,6 @@ watch(
   { deep: true },
 )
 
-// Public methods that can be accessed via template refs
 defineExpose({
   play: () => {
     if (mediaRef.value) {
@@ -133,7 +109,6 @@ defineExpose({
       const currentSegment = findSegmentForTime(currentTime)
 
       if (!currentSegment) {
-        // If not in a segment, find the first segment and start from there
         const firstSegment = [...props.timelineSegments].sort((a, b) => a.start - b.start)[0]
         if (firstSegment) {
           mediaRef.value.currentTime = firstSegment.start

@@ -40,7 +40,6 @@ const handleDrop = (event: DragEvent) => {
     const file = event.dataTransfer.files[0]
     const fileType = file.type
 
-    // Check if the file type is acceptable
     if (acceptedFileTypes.includes(fileType)) {
       emit('file-selected', file)
     } else {
@@ -49,7 +48,6 @@ const handleDrop = (event: DragEvent) => {
   }
 }
 
-// Setup event listeners for the document
 onMounted(() => {
   if (dropzone.value) {
     dropzone.value.addEventListener('dragover', handleDragOver)

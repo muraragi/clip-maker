@@ -21,10 +21,8 @@ const emit = defineEmits<{
   'update:segments': [Segment[]]
 }>()
 
-// Instead of just a start and end time, we now have an array of segments
 const segments = ref<Segment[]>([{ start: 0, end: props.duration, id: crypto.randomUUID() }])
 
-// Watch for duration changes to update the initial segment
 watch(
   () => props.duration,
   (newDuration) => {
@@ -35,21 +33,18 @@ watch(
   { immediate: true },
 )
 
-// Compute the combined duration of all segments
 const totalSelectedDuration = computed(() => {
   return segments.value.reduce((total, segment) => {
     return total + (segment.end - segment.start)
   }, 0)
 })
 
-// Find which segment the current time is in
 const currentSegmentIndex = computed(() => {
   return segments.value.findIndex(
     (segment) => props.currentTime >= segment.start && props.currentTime <= segment.end,
   )
 })
 
-// Handle timeline click for seeking
 const handleTimelineClick = (event: MouseEvent) => {
   const timeline = event.currentTarget as HTMLDivElement
   const rect = timeline.getBoundingClientRect()
@@ -58,7 +53,6 @@ const handleTimelineClick = (event: MouseEvent) => {
   emit('seek', Math.max(0, Math.min(time, props.duration)))
 }
 
-// Dragging functionality
 const isDragging = ref(false)
 const dragType = ref<'playhead' | 'startHandle' | 'endHandle' | null>(null)
 const dragSegmentId = ref<string | null>(null)
@@ -94,10 +88,8 @@ const handleDrag = (event: MouseEvent) => {
     const segment = { ...updatedSegments[segmentIndex] }
 
     if (dragType.value === 'startHandle') {
-      // Ensure start handle doesn't cross end handle
       segment.start = Math.min(time, segment.end - 0.1)
     } else {
-      // Ensure end handle doesn't cross start handle
       segment.end = Math.max(time, segment.start + 0.1)
     }
 
@@ -113,14 +105,12 @@ const endDrag = () => {
   dragSegmentId.value = null
 }
 
-// Add a segment cut at the current playhead position
 const splitSegmentAtPlayhead = () => {
   const segmentIndex = currentSegmentIndex.value
   if (segmentIndex === -1) return
 
   const segment = segments.value[segmentIndex]
 
-  // Don't split if too close to edges
   if (
     Math.abs(props.currentTime - segment.start) < 0.1 ||
     Math.abs(props.currentTime - segment.end) < 0.1
@@ -128,7 +118,6 @@ const splitSegmentAtPlayhead = () => {
     return
   }
 
-  // Create two segments from the current one
   const newSegments = [...segments.value]
   newSegments.splice(
     segmentIndex,
@@ -141,18 +130,15 @@ const splitSegmentAtPlayhead = () => {
   emit('update:segments', newSegments)
 }
 
-// Delete a segment
 const deleteSegment = (segmentId: string) => {
   const filteredSegments = segments.value.filter((s) => s.id !== segmentId)
   if (filteredSegments.length === 0) {
-    return // Don't allow deleting all segments
   }
 
   segments.value = filteredSegments
   emit('update:segments', filteredSegments)
 }
 
-// Handle spacebar for play/pause
 const handleKeyDown = (event: KeyboardEvent) => {
   if (
     event.code === 'Space' &&
@@ -164,7 +150,6 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 }
 
-// Add and remove keyboard event listener
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('mousemove', handleDrag)
@@ -177,12 +162,10 @@ onUnmounted(() => {
   window.removeEventListener('mouseup', endDrag)
 })
 
-// Calculate playhead position as percentage
 const playheadPosition = computed(() => {
   return (props.currentTime / props.duration) * 100
 })
 
-// Calculate segment positions for visual display
 const segmentStyles = computed(() => {
   return segments.value.map((segment) => ({
     left: `${(segment.start / props.duration) * 100}%`,
@@ -191,7 +174,6 @@ const segmentStyles = computed(() => {
   }))
 })
 
-// Format time as MM:SS.MS
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60)
   const secs = Math.floor(seconds % 60)

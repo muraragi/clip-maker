@@ -9,7 +9,7 @@ export const useTimelineStore = defineStore('timeline', () => {
 
   const setDuration = (value: number) => {
     duration.value = value
-    // Initialize endTime to full duration when media is loaded
+
     endTime.value = value
   }
 

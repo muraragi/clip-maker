@@ -49,11 +49,10 @@ const handleExport = async () => {
 
     editorStore.setProcessedBlob(result)
 
-    // Create and trigger download in the browser
     const url = URL.createObjectURL(result)
     const a = document.createElement('a')
     a.href = url
-    a.download = `edited_${originalFile.value.name}`
+    a.download = `clip_maker_${originalFile.value.name}`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -69,7 +68,7 @@ const handleExport = async () => {
   <div class="min-h-screen flex flex-col">
     <header class="w-full max-w-[95vw] mx-auto py-4">
       <div class="flex justify-between items-center">
-        <h1 class="text-lg font-bold">Quick Editor</h1>
+        <h1 class="text-lg font-bold">Clip Maker</h1>
         <div class="flex items-center gap-4">
           <div v-if="isProcessing" class="flex items-center gap-3 min-w-[200px]">
             <Progress :value="processingProgress" class="w-full" />
@@ -78,7 +77,7 @@ const handleExport = async () => {
             >
           </div>
           <Button variant="default" :disabled="isExportDisabled" @click="handleExport">
-            Export Video
+            Save Clip
           </Button>
           <ThemeToggle />
         </div>

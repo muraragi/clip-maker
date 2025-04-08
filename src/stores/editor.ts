@@ -23,27 +23,22 @@ export interface TimelineSegment {
 }
 
 export const useEditorStore = defineStore('editor', () => {
-  // File and media state
   const originalFile = ref<File | null>(null)
   const mediaSourceUrl = ref<string | null>(null)
   const processedFileBlob = ref<Blob | null>(null)
 
-  // Timeline state
   const duration = ref(0)
   const currentTime = ref(0)
   const timelineSegments = ref<TimelineSegment[]>([])
 
-  // Edit settings
   const cropRect = ref<CropRect | null>(null)
   const selectedFilter = ref<string | null>(null)
   const textOverlay = ref<TextOverlay | null>(null)
 
-  // Processing state
   const isFFmpegLoading = ref(true)
   const isProcessing = ref(false)
   const processingProgress = ref(0)
 
-  // Actions
   const setFile = (file: File) => {
     if (mediaSourceUrl.value) {
       URL.revokeObjectURL(mediaSourceUrl.value)
@@ -51,7 +46,6 @@ export const useEditorStore = defineStore('editor', () => {
     originalFile.value = file
     mediaSourceUrl.value = URL.createObjectURL(file)
 
-    // Reset state when new file is loaded
     processedFileBlob.value = null
     duration.value = 0
     currentTime.value = 0
@@ -64,7 +58,7 @@ export const useEditorStore = defineStore('editor', () => {
 
   const setDuration = (value: number) => {
     duration.value = value
-    // Initialize with a single segment covering the whole timeline
+
     if (timelineSegments.value.length === 0) {
       timelineSegments.value = [{ start: 0, end: value, id: crypto.randomUUID() }]
     }
@@ -151,7 +145,6 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   return {
-    // State
     originalFile,
     mediaSourceUrl,
     duration,
@@ -165,7 +158,6 @@ export const useEditorStore = defineStore('editor', () => {
     processingProgress,
     processedFileBlob,
 
-    // Actions
     setFile,
     setDuration,
     setCurrentTime,
