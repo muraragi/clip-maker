@@ -7,6 +7,7 @@ import MediaPlayer from './components/MediaPlayer.vue'
 import TimelineScrubber from './components/TimelineScrubber.vue'
 import { useEditorStore } from './stores/editor'
 import { useFFmpeg } from './composables/useFFmpeg'
+import type { TimelineSegment } from './stores/editor'
 
 const mediaRef = ref<InstanceType<typeof MediaPlayer> | null>(null)
 const editorStore = useEditorStore()
@@ -14,7 +15,7 @@ const { loadFFmpeg, error: ffmpegError } = useFFmpeg()
 const isPlaying = ref(false)
 
 // Destructure store properties with storeToRefs for reactivity
-const { originalFile, mediaSourceUrl, duration, currentTime, startTime, endTime, isFFmpegLoading } =
+const { originalFile, mediaSourceUrl, duration, currentTime, timelineSegments, isFFmpegLoading } =
   storeToRefs(editorStore)
 
 onMounted(async () => {
@@ -34,8 +35,8 @@ const handleTimeUpdate = (currentTime: number) => {
   editorStore.setCurrentTime(currentTime)
 }
 
-const handleRangeUpdate = ([start, end]: [number, number]) => {
-  editorStore.setTimeRange(start, end)
+const handleSegmentsUpdate = (segments: TimelineSegment[]) => {
+  editorStore.setTimelineSegments(segments)
 }
 
 const handleSeek = (time: number) => {
@@ -48,7 +49,7 @@ const handleTogglePlay = async () => {
   if (!mediaRef.value) return
 
   if (isPlaying.value) {
-    await mediaRef.value.pause()
+    mediaRef.value.pause()
     isPlaying.value = false
   } else {
     await mediaRef.value.play()
@@ -93,6 +94,7 @@ const handlePause = () => {
         <MediaPlayer
           ref="mediaRef"
           :src="mediaSourceUrl"
+          :timeline-segments="timelineSegments"
           @loadedmetadata="handleLoadedMetadata"
           @timeupdate="handleTimeUpdate"
           @play="handlePlay"
@@ -103,21 +105,11 @@ const handlePause = () => {
           v-if="duration > 0"
           :duration="duration"
           :current-time="currentTime"
-          :start-time="startTime"
-          :end-time="endTime"
           :is-playing="isPlaying"
-          @update:range="handleRangeUpdate"
+          @update:segments="handleSegmentsUpdate"
           @seek="handleSeek"
           @toggle-play="handleTogglePlay"
         />
-
-        <div class="text-sm text-slate-500">
-          Duration: {{ Math.floor(duration / 60) }}:{{
-            Math.floor(duration % 60)
-              .toString()
-              .padStart(2, '0')
-          }}
-        </div>
       </div>
     </div>
   </AppLayout>

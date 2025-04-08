@@ -16,6 +16,12 @@ export interface TextOverlay {
   fontFamily?: string
 }
 
+export interface TimelineSegment {
+  start: number
+  end: number
+  id: string
+}
+
 export const useEditorStore = defineStore('editor', () => {
   // File and media state
   const originalFile = ref<File | null>(null)
@@ -25,8 +31,7 @@ export const useEditorStore = defineStore('editor', () => {
   // Timeline state
   const duration = ref(0)
   const currentTime = ref(0)
-  const startTime = ref(0)
-  const endTime = ref(0)
+  const timelineSegments = ref<TimelineSegment[]>([])
 
   // Edit settings
   const cropRect = ref<CropRect | null>(null)
@@ -50,8 +55,7 @@ export const useEditorStore = defineStore('editor', () => {
     processedFileBlob.value = null
     duration.value = 0
     currentTime.value = 0
-    startTime.value = 0
-    endTime.value = 0
+    timelineSegments.value = []
     cropRect.value = null
     selectedFilter.value = null
     textOverlay.value = null
@@ -60,17 +64,36 @@ export const useEditorStore = defineStore('editor', () => {
 
   const setDuration = (value: number) => {
     duration.value = value
-    // Initialize endTime to full duration when media is loaded
-    endTime.value = value
+    // Initialize with a single segment covering the whole timeline
+    if (timelineSegments.value.length === 0) {
+      timelineSegments.value = [{ start: 0, end: value, id: crypto.randomUUID() }]
+    }
   }
 
   const setCurrentTime = (value: number) => {
     currentTime.value = value
   }
 
-  const setTimeRange = (start: number, end: number) => {
-    startTime.value = start
-    endTime.value = end
+  const setTimelineSegments = (segments: TimelineSegment[]) => {
+    timelineSegments.value = segments
+  }
+
+  const getSelectedDuration = (): number => {
+    return timelineSegments.value.reduce((total, segment) => {
+      return total + (segment.end - segment.start)
+    }, 0)
+  }
+
+  const isInActiveSegment = (): boolean => {
+    return timelineSegments.value.some(
+      (segment) => currentTime.value >= segment.start && currentTime.value <= segment.end,
+    )
+  }
+
+  const getCurrentSegmentIndex = (): number => {
+    return timelineSegments.value.findIndex(
+      (segment) => currentTime.value >= segment.start && currentTime.value <= segment.end,
+    )
   }
 
   const setCropRect = (rect: CropRect | null) => {
@@ -119,8 +142,7 @@ export const useEditorStore = defineStore('editor', () => {
     processedFileBlob.value = null
     duration.value = 0
     currentTime.value = 0
-    startTime.value = 0
-    endTime.value = 0
+    timelineSegments.value = []
     cropRect.value = null
     selectedFilter.value = null
     textOverlay.value = null
@@ -134,8 +156,7 @@ export const useEditorStore = defineStore('editor', () => {
     mediaSourceUrl,
     duration,
     currentTime,
-    startTime,
-    endTime,
+    timelineSegments,
     cropRect,
     selectedFilter,
     textOverlay,
@@ -148,7 +169,10 @@ export const useEditorStore = defineStore('editor', () => {
     setFile,
     setDuration,
     setCurrentTime,
-    setTimeRange,
+    setTimelineSegments,
+    getSelectedDuration,
+    isInActiveSegment,
+    getCurrentSegmentIndex,
     setCropRect,
     setFilter,
     setTextOverlay,

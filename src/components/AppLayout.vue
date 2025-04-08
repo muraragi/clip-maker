@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { useEditorStore } from '@/stores/editor'
 import { useFFmpeg } from '@/composables/useFFmpeg'
+import { Toaster } from '@/components/ui/sonner'
+import { toast } from 'vue-sonner'
 
 defineSlots<{
   default: () => unknown
@@ -15,8 +17,7 @@ const editorStore = useEditorStore()
 const { performEdit } = useFFmpeg()
 const {
   originalFile,
-  startTime,
-  endTime,
+  timelineSegments,
   cropRect,
   selectedFilter,
   textOverlay,
@@ -26,7 +27,12 @@ const {
 } = storeToRefs(editorStore)
 
 const isExportDisabled = computed(() => {
-  return !originalFile.value || isFFmpegLoading.value || isProcessing.value
+  return (
+    !originalFile.value ||
+    isFFmpegLoading.value ||
+    isProcessing.value ||
+    timelineSegments.value.length === 0
+  )
 })
 
 const handleExport = async () => {
@@ -35,8 +41,7 @@ const handleExport = async () => {
   try {
     const result = await performEdit({
       inputFile: originalFile.value,
-      startTime: startTime.value,
-      endTime: endTime.value,
+      timelineSegments: timelineSegments.value,
       cropRect: cropRect.value,
       filter: selectedFilter.value,
       textOverlay: textOverlay.value,
@@ -54,13 +59,13 @@ const handleExport = async () => {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   } catch (error) {
-    console.error('Export failed:', error)
-    // Here you might want to show a toast notification for the error
+    toast.error(`Export failed: ${error}`)
   }
 }
 </script>
 
 <template>
+  <Toaster />
   <div class="min-h-screen flex flex-col">
     <header class="w-full max-w-[95vw] mx-auto py-4">
       <div class="flex justify-between items-center">
