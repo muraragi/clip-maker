@@ -17,6 +17,16 @@ export default defineConfig({
       'Cross-Origin-Embedder-Policy': 'require-corp',
       'Cross-Origin-Opener-Policy': 'same-origin',
     },
+    proxy: {
+      '/api/cors': {
+        target: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-mt@0.12.9/dist/esm',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/cors/, ''),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      },
+    },
   },
   optimizeDeps: {
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/core'],

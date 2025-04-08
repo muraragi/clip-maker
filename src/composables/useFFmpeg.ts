@@ -15,7 +15,7 @@ export function useFFmpeg() {
       if (!ffmpeg) {
         ffmpeg = new FFmpeg()
 
-        const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-mt@0.12.9/dist/esm'
+        const baseURL = '/api/cors'
 
         await ffmpeg.load({
           coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
