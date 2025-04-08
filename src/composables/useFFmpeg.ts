@@ -3,6 +3,7 @@ import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
 import { useEditorStore } from '@/stores/editor'
 import type { CropRect, TextOverlay, TimelineSegment } from '@/stores/editor'
+import { toast } from 'vue-sonner'
 
 let ffmpeg: FFmpeg | null = null
 
@@ -31,7 +32,7 @@ export function useFFmpeg() {
       editorStore.setFFmpegLoadingState(false)
     } catch (e) {
       error.value = e instanceof Error ? e : new Error('Failed to load FFmpeg')
-      console.error('Failed to load FFmpeg:', e)
+      toast.error(`Failed to load FFmpeg: ${e}`)
       editorStore.setFFmpegLoadingState(false)
     }
   }
@@ -228,7 +229,7 @@ export function useFFmpeg() {
       return outputBlob
     } catch (e) {
       const error = e instanceof Error ? e : new Error('Failed to process video')
-      console.error('Video processing failed:', error)
+      toast.error(`Failed to process video: ${error.message}`)
       throw error
     } finally {
       editorStore.setProcessingState(false)
